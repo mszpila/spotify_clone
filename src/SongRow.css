@@ -1,0 +1,40 @@
+.songRow {
+	/* margin-left: 20px; */
+	/* padding: 20px; */
+	display: flex;
+	align-items: center;
+	color: white;
+	padding: 10px 0;
+	/* border-top: 1px solid #282828; */
+	/* border-bottom: 0.5px solid #282828; */
+}
+
+.songRow:hover {
+	cursor: pointer;
+	background-color: #282828;
+	/* background-color: rgba(91, 87, 115, 0.2); */
+	/* opacity: 0.8; */
+	/* -webkit-box-shadow: 2px -2px 5px 0px rgba(255, 255, 255, 0.37);
+	-moz-box-shadow: 2px -2px 5px 0px rgba(255, 255, 255, 0.37);
+	box-shadow: 2px -2px 5px 0px rgba(255, 255, 255, 0.37); */
+}
+
+.songRow__info {
+	margin-left: 20px;
+}
+
+.songRow__info > h1 {
+	font-size: 16px;
+}
+
+.songRow__info > p {
+	font-size: 14px;
+	color: grey;
+	margin-top: 3px;
+}
+
+.songRow__cover {
+	height: 40px;
+	width: 40px;
+	margin-left: 10px;
+}
