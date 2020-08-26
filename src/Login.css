@@ -14,10 +14,20 @@
 } */
 
 .login > a {
-	padding: 20px;
+	width: 180px;
+	height: 50px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	padding: 11px 32px 9px 32px;
 	background-color: #1db954;
 	border-radius: 99px;
-	color: white;
+	/* color: white; */
+	color: #0f0f0f;
 	font-weight: 700;
 	text-decoration: none;
+}
+
+.login > a:hover {
+	color: #ffffff;
 }

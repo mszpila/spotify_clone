@@ -6,6 +6,7 @@ export const authEndpoint = "https://accounts.spotify.com/authorize";
 // established in the Spotify App -
 // https://developer.spotify.com/documentation/general/guides/app-settings/
 const redirectUri = "http://localhost:3000/";
+// const redirectUri = "https://mszpila.github.io/spotify_clone/";
 
 // Spotify App ID
 const clientId = "227bcf1c0a174f888e12f43096773e43";
