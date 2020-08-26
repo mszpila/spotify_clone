@@ -1,0 +1,27 @@
+.cards {
+	/* margin-top: 60px; */
+}
+
+.cards__container {
+	/* margin-top: 60px; */
+	display: flex;
+	justify-content: flex-start;
+	/* align-items: center; */
+	/* flex-wrap: wrap; */
+	overflow-x: scroll;
+	overflow-y: hidden;
+	/* margin-left: 10px;
+    margin-right: 10px; */
+	margin: 0 10px;
+	scrollbar-width: none;
+}
+
+.cards__title {
+	margin-left: 20px;
+}
+
+.cards > hr {
+	margin-left: 20px;
+	margin-right: 10px;
+	border: 1px solid #282828;
+}

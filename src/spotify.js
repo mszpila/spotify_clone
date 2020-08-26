@@ -21,6 +21,9 @@ const scopes = [
 	"streaming",
 	"user-read-email",
 	"user-read-private",
+	"user-library-read",
+	"user-read-playback-position",
+	"user-library-modify",
 ];
 
 // token is like a pass string that authenticate who you are

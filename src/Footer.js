@@ -1,101 +1,117 @@
 import React, { useState, useEffect } from "react";
 import "./Footer.css";
 import PlayCircleOutlinedIcon from "@material-ui/icons/PlayCircleOutline";
+import PauseCircleOutlineRoundedIcon from "@material-ui/icons/PauseCircleOutlineRounded";
 import SkipPreviousIcon from "@material-ui/icons/SkipPrevious";
 import SkipNextIcon from "@material-ui/icons/SkipNext";
 import ShuffleIcon from "@material-ui/icons/Shuffle";
-import RepeatIcon from "@material-ui/icons/Repeat";
+// import RepeatIcon from "@material-ui/icons/Repeat";
+import RepeatRoundedIcon from "@material-ui/icons/RepeatRounded";
+import RepeatOneRoundedIcon from "@material-ui/icons/RepeatOneRounded";
 import { Grid, Slider } from "@material-ui/core";
 import PlaylistPlayIcon from "@material-ui/icons/PlaylistPlay";
 import VolumeDownIcon from "@material-ui/icons/VolumeDown";
+import VolumeUpRoundedIcon from "@material-ui/icons/VolumeUpRounded";
+// import VolumeDownRoundedIcon from "@material-ui/icons/VolumeDownRounded";
+import VolumeMuteRoundedIcon from "@material-ui/icons/VolumeMuteRounded";
+import VolumeOffRoundedIcon from "@material-ui/icons/VolumeOffRounded";
+import FavoriteBorderRoundedIcon from "@material-ui/icons/FavoriteBorderRounded";
+import FavoriteRoundedIcon from "@material-ui/icons/FavoriteRounded";
 import { useDataLayerValue } from "./DataLayer";
-import { spotifyApi } from "./App";
 
-function Footer() {
-	const [{ volume, player, playback }, dispatch] = useDataLayerValue();
-	// const [ms, setMs] = useState(0);
-	// const [msMax, setMsMax] = useState(1);
+function Footer({ spotifyApi }) {
+	const [
+		{
+			volume,
+			player,
+			playback,
+			query,
+			recentTracks,
+			recommandations,
+			featuredPlaylists,
+			newReleases,
+			categories,
+			topTracks,
+		},
+		dispatch,
+	] = useDataLayerValue();
 	const [vol, setVol] = useState(0);
-	const [activeShuffle, setActiveShuffle] = useState(false);
-	// const [activeRepeat, setActiveRepeat] = useState(false);
-	// const repeatStates = ["off", "context", "track"];
-	// const [repeatState, setRepeatState] = useState(repeatStates[0]);
-	const [mode, setMode] = useState(0);
+	const [fav, setFav] = useState(false);
+
+	const element = document.body;
+
+	const keyBoardController = (event) => {
+		if (player && event.target === element) {
+			if (event.keyCode === 32) {
+				event.preventDefault();
+				player.togglePlay();
+			} else if (event.keyCode === 77) {
+				mute(event);
+			} else if (event.keyCode === 37) {
+				seekPosition(
+					event,
+					((playback?.position - 5000) * 100) / playback?.duration
+				);
+			} else if (event.keyCode === 39) {
+				seekPosition(
+					event,
+					((playback?.position + 5000) * 100) / playback?.duration
+				);
+			} else if (event.keyCode === 38) {
+				event.preventDefault();
+				changeVolume(event, volume + 10);
+			} else if (event.keyCode === 40) {
+				event.preventDefault();
+				changeVolume(event, volume - 10);
+			} else if (event.keyCode === 188) {
+				prevTrack();
+			} else if (event.keyCode === 190) {
+				nextTrack();
+			} else if (event.keyCode === 82) {
+				activateRepeat();
+			} else if (event.keyCode === 83) {
+				activateShuffle();
+			}
+		}
+	};
+	useEffect(() => {
+		element.addEventListener("keydown", keyBoardController);
+
+		return () => {
+			element.removeEventListener("keydown", keyBoardController);
+		};
+	});
 
 	const activateShuffle = () => {
-		setActiveShuffle(!activeShuffle);
+		spotifyApi.setShuffle(!playback?.shuffle);
 	};
-
-	useEffect(() => {
-		spotifyApi.setShuffle(activeShuffle);
-	}, [activeShuffle]);
 
 	const activateRepeat = () => {
-		// if (mode === 2) {
-		// 	setMode(0);
-		// } else {
-		// 	setMode(mode + 1);
-		// }
-		switch (mode) {
+		switch (playback?.repeat_mode) {
 			case 0:
-				setMode(1);
+				spotifyApi.setRepeat("context");
 				break;
 			case 1:
-				setMode(2);
+				spotifyApi.setRepeat("track");
 				break;
 			case 2:
-				setMode(0);
+				spotifyApi.setRepeat("off");
 				break;
 			default:
-				return mode;
+				return playback?.repeat_mode;
 		}
 	};
 
-	// const activateRepeat = () => {
-	// 	setRepeatState(repeatStates[]);
-	// };
-
-	// useEffect(() => {
-	// 	// spotifyApi.setRepeat(activeShuffle);
-	// 	if (activeRepeat) {
-	// 		spotifyApi.setRepeat(repeatStates[1]);
-	// 	} else {
-	// 		spotifyApi.setRepeat(repeatStates[0]);
-	// 	}
-	// }, [activeRepeat]);
-
-	useEffect(() => {
-		switch (mode) {
-			case 0:
-				spotifyApi.setRepeat("off");
-				break;
-			case 1:
-				spotifyApi.setRepeat("context");
-				break;
-			case 2:
-				spotifyApi.setRepeat("track");
-				break;
-			default:
-				return mode;
-		}
-	}, [mode]);
-
 	const mute = (event) => {
-		console.log("event: ", event, "mute");
 		if (vol === 0) {
-			player.setVolume(0).then(() => {
-				console.log("Volume updated!");
-			});
+			player.setVolume(0);
 			dispatch({
 				type: "SET_VOLUME",
 				payload: 0, // volume: 64 ==> 0
 			});
 			setVol(volume); // volume: 64 vol: 0 ==> 64
 		} else {
-			console.log("event: ", event, "unmute");
-			player.setVolume(vol / 100).then(() => {
-				console.log("Volume updated!");
-			});
+			player.setVolume(vol / 100);
 			dispatch({
 				type: "SET_VOLUME",
 				payload: vol,
@@ -105,24 +121,17 @@ function Footer() {
 	};
 
 	const changeVolume = (event, newVolume) => {
-		console.log("event: ", event, "newVolume:", newVolume);
-		player.setVolume(newVolume / 100).then(() => {
-			console.log("Volume updated!");
-		});
+		if (newVolume > 100) {
+			newVolume = 100;
+		} else if (newVolume < 0) {
+			newVolume = 0;
+		}
+		player.setVolume(newVolume / 100);
 		dispatch({
 			type: "SET_VOLUME",
 			payload: newVolume,
 		});
 	};
-	// useEffect(() => {
-	// 	spotifyApi.getMyCurrentPlaybackState().then((result) =>
-	// 		// dispatch({
-	// 		// 	type: "SET_CURRENT_PLAYBACK",
-	// 		// 	payload: result,
-	// 		// })
-	// 		console.log("state ", result)
-	// 	);
-	// }, []);
 
 	const prevTrack = () => {
 		spotifyApi
@@ -130,142 +139,47 @@ function Footer() {
 			.then((result) => result.progress_ms)
 			.then((ms) => {
 				if (ms > 3000) {
-					player.seek(0).then(() => {
-						console.log("Changed position to beginning!");
-					});
+					player.seek(0);
 				} else {
-					player.previousTrack().then(() => {
-						console.log("Set to previous track!");
-					});
+					player.previousTrack();
 				}
 			});
-		// spotifyApi
-		// 	.getMyCurrentPlaybackState()
-		// 	// .then(() => player.getCurrentState())
-		// 	.then((state) => {
-		// 		// console.log("dif state: ", state);
-		// 		dispatch({
-		// 			type: "SET_CURRENT_PLAYBACK",
-		// 			payload: state,
-		// 		});
-		// 	});
 	};
 
 	const playPause = (event, newState) => {
-		player.togglePlay().then(() => {
-			console.log("Toggled playback!");
-			// setMs(playback.position);
-			// setMsMax(playback.duration);
-		});
-		// spotifyApi
-		// 	.getMyCurrentPlaybackState()
-		// 	// .then(() => player.getCurrentState())
-		// 	.then((state) => {
-		// 		// console.log("dif state: ", state);
-		// 		dispatch({
-		// 			type: "SET_CURRENT_PLAYBACK",
-		// 			payload: state,
-		// 		});
-		// 	});
-		// spotifyApi
-		// 	.getMyCurrentPlaybackState()
-		// 	.then((result) =>
-		// 		// dispatch({
-		// 		// 	type: "SET_CURRENT_PLAYBACK",
-		// 		// 	payload: result,
-		// 		// })
-		// 		console.log("state: ", result)
-		// 	)
-		// 	.catch((err) => console.log(err));
+		player.togglePlay();
 	};
 
 	const check = () => {
-		// spotifyApi
-		// 	.getMyCurrentPlaybackState()
-		// 	.then((result) =>
-		// 		// dispatch({
-		// 		// 	type: "SET_CURRENT_PLAYBACK",
-		// 		// 	payload: result,
-		// 		// })
-		// 		console.log("state: ", result)
-		// 	)
-		// 	.catch((err) => console.log(err));
-		// spotifyApi.getMyCurrentPlayingTrack().then((result) =>
-		// 	// dispatch({
-		// 	// 	type: "SET_CURRENT_PLAYBACK",
-		// 	// 	payload: result,
-		// 	// })
-		// 	console.log("state ", result)
-		// );
-		// console.log("playback ", playback);
-		// console.log("ms ", ms, "msMax ", msMax);
-		// console.log("ms2 ", playback?.position, "msMax2 ", playback?.duration);
-		// setMs((ms) => playback?.position);
-		// setMsMax((msMax) => playback?.duration);
-		// console.log("ms ", ms, "msMax ", msMax);
-		// player.getCurrentState().then()
-		// player.getCurrentState().then((state) => {
-		// 	if (!state) {
-		// 		console.error(
-		// 			"User is not playing music through the Web Playback SDK"
-		// 		);
-		// 		return;
-		// 	}
-		// 	console.log("player state: ", state);
-		// 	// let {
-		// 	// 	current_track,
-		// 	// 	next_tracks: [next_track],
-		// 	// } = state.track_window;
-
-		// 	// console.log("Currently Playing", current_track);
-		// 	// console.log("Playing Next", next_track);
-		// });
 		console.log("wtf: ", player);
+		console.log("playback: ", playback);
+		console.log("recent: ", recentTracks);
+		console.log("recommendations: ", recommandations);
+		console.log("featured: ", featuredPlaylists);
+		console.log("releases: ", newReleases);
+		console.log("categories: ", categories);
+		console.log("top tracks: ", topTracks);
+		console.log("query: ", query);
 	};
 
-	// const position = setInterval(() => {
-	// 	// console.log("player:", player);
-	// 	console.log("playback:", playback?.position);
-	// }, 1000);
-
 	const nextTrack = () => {
-		player.nextTrack().then(() => {
-			console.log("Skipped to next track!");
-		});
-		// spotifyApi
-		// 	.getMyCurrentPlaybackState()
-		// 	// .then(() => player.getCurrentState())
-		// 	.then((state) => {
-		// 		// console.log("dif state: ", state);
-		// 		dispatch({
-		// 			type: "SET_CURRENT_PLAYBACK",
-		// 			payload: state,
-		// 		});
-		// 	});
+		player.nextTrack();
 	};
 
 	const seekPosition = (event, newPosition) => {
-		console.log("event: ", event, "newPosition:", newPosition);
-		// dispatch({
-		// 	type: "SET_VOLUME",
-		// 	payload: newVolume,
-		// });
-		player.seek((newPosition * playback?.duration) / 100).then(() => {
-			console.log("Changed position!");
-		});
+		player.seek((newPosition * playback?.duration) / 100);
 	};
 
 	useEffect(() => {
 		const interval = setInterval(() => {
-			// console.log("every sec ", player);
 			if (player && !playback?.paused) {
 				player.getCurrentState().then((state) => {
-					if (!state) {
-						console.error(
-							"User is not playing music through the Web Playback SDK"
-						);
-						return;
-					}
+					// if (!state) {
+					// 	console.error(
+					// 		"User is not playing music through the Web Playback SDK"
+					// 	);
+					// 	return;
+					// }
 					dispatch({
 						type: "SET_CURRENT_PLAYBACK",
 						payload: state,
@@ -273,73 +187,50 @@ function Footer() {
 				});
 			}
 		}, 250);
-		// interval();
 		if (playback?.paused) {
 			clearInterval(interval);
 		}
 		return () => clearInterval(interval);
 	});
-	// useEffect(() => {
-	// 	const interval = setInterval(() => {
-	// 		player.getCurrentState().then(state => {
-	// 			if (!state) {
-	// 			  console.error('User is not playing music through the Web Playback SDK');
-	// 			  return;
-	// 			}
 
-	// 			let {
-	// 			  current_track,
-	// 			  next_tracks: [next_track]
-	// 			} = state.track_window;
+	useEffect(() => {
+		if (playback) {
+			spotifyApi
+				.containsMySavedTracks([
+					playback?.track_window.current_track.id,
+				])
+				.then((result) => {
+					setFav(...result);
+				})
+				.catch((err) => console.log("error in footer ", err));
+		}
+	}, [playback]);
 
-	// 			console.log('Currently Playing', current_track);
-	// 			console.log('Playing Next', next_track);
-	// 		  });
-	// 		return () => clearInterval(interval);
-	// 		// }
-	// 	}, 1000);
-	// });
-	// useEffect(() => {
-	// 	const interval = setInterval(() => {
-	// 		if (!playback?.paused) {
-	// 			// setMs((ms) => ms + 100);
-	// 			setMs(ms + 100);
-	// 			setMsMax(playback?.duration);
-	// 			console.log("interval: ", playback);
-	// 		}
-	// 	}, 100);
-	// 	return () => clearInterval(interval);
-	// }, []);
-	// const interval = setInterval(() => {
-	// 	//   console.log('This will run every second!');
-	// 	if (!playback?.paused) {
-	// 		// let count = (playback.position * 100) / playback.duration;
-	// 		// console.log("count ", count);
-	// 		// return count;
-	// 		// let current = ((ms + 1000) * 100) / msMax;
-	// 		// console.log("current ", current);
-	// 		// return current;
-	// 		setMs(playback?.position)
-	// 	}
-	// 	// }
-	// }, 1000);
-	// console.log("position ", ms, "duration ", msMax);
+	const toggleFav = () => {
+		if (fav) {
+			spotifyApi
+				.removeFromMySavedTracks([
+					playback?.track_window?.current_track?.id,
+				])
+				.then(() => setFav(false));
+		} else {
+			spotifyApi
+				.addToMySavedTracks([playback?.track_window?.current_track?.id])
+				.then(() => setFav(true));
+		}
+	};
 
 	return (
 		<div className="footer">
 			<div className="footer__left">
 				<img
 					className={`${playback ? "footer__albumLogo" : null}`}
-					// src="https://img.discogs.com/didA8oLs3ricJa5ecMmoTDAyjrU=/fit-in/300x300/filters:strip_icc():format(jpeg):mode_rgb():quality(40)/discogs-images/R-2255190-1274289191.jpeg.jpg"
 					src={
 						playback?.track_window.current_track.album.images[0].url
 					}
-					// src={playback?.item.album.images[0].url}
 					alt=""
 				/>
 				<div className="footer__songInfo">
-					{/* playback?.item.name / playback?.track_window.current_track.name  */}
-					{/* playback?.item.artists / playback?.track_window.current_track.artists  */}
 					<h4>{playback?.track_window.current_track.name}</h4>
 					<p>
 						{playback?.track_window.current_track.artists
@@ -347,12 +238,29 @@ function Footer() {
 							.join(", ")}
 					</p>
 				</div>
+				<div className="footer__savedTrack">
+					{playback ? (
+						fav ? (
+							<FavoriteRoundedIcon
+								fontSize="small"
+								onClick={toggleFav}
+							/>
+						) : (
+							<FavoriteBorderRoundedIcon
+								fontSize="small"
+								onClick={toggleFav}
+							/>
+						)
+					) : (
+						<div> </div>
+					)}
+				</div>
 			</div>
 			<div className="footer__center">
 				<div className="footer_buttons">
 					<ShuffleIcon
 						className={`footer__icon ${
-							activeShuffle ? "footer__green" : ""
+							playback?.shuffle ? "footer__green" : ""
 						}`}
 						onClick={activateShuffle}
 					/>
@@ -360,24 +268,53 @@ function Footer() {
 						className="footer__icon"
 						onClick={prevTrack}
 					/>
-					<PlayCircleOutlinedIcon
-						fontSize="large"
-						className="footer__icon"
-						onClick={playPause}
-					/>
+					{playback ? (
+						playback.paused ? (
+							<PlayCircleOutlinedIcon
+								fontSize="large"
+								className="footer__icon"
+								onClick={playPause}
+							/>
+						) : (
+							<PauseCircleOutlineRoundedIcon
+								fontSize="large"
+								className="footer__icon"
+								onClick={playPause}
+							/>
+						)
+					) : (
+						<PlayCircleOutlinedIcon
+							fontSize="large"
+							className="footer__icon"
+							onClick={playPause}
+						/>
+					)}
 					<SkipNextIcon
 						className="footer__icon"
 						onClick={nextTrack}
 					/>
-					<RepeatIcon
-						className={`footer__icon ${
-							mode ? "footer__green" : ""
-						}`}
-						onClick={activateRepeat}
-					/>
+					{playback ? (
+						playback?.repeat_mode < 2 ? (
+							<RepeatRoundedIcon
+								className={`footer__icon ${
+									playback?.repeat_mode ? "footer__green" : ""
+								}`}
+								onClick={activateRepeat}
+							/>
+						) : (
+							<RepeatOneRoundedIcon
+								className="footer__icon footer__green"
+								onClick={activateRepeat}
+							/>
+						)
+					) : (
+						<RepeatRoundedIcon
+							className="footer__icon"
+							onClick={activateRepeat}
+						/>
+					)}
 				</div>
 				<Slider
-					// variant="determinate"
 					value={(playback?.position * 100) / playback?.duration}
 					onChange={seekPosition}
 					className="footer__progress"
@@ -392,10 +329,27 @@ function Footer() {
 						/>
 					</Grid>
 					<Grid item>
-						<VolumeDownIcon
-							onClick={mute}
-							className="footer__icon"
-						/>
+						{volume > 66 ? (
+							<VolumeUpRoundedIcon
+								onClick={mute}
+								className="footer__icon"
+							/>
+						) : volume > 33 ? (
+							<VolumeDownIcon
+								onClick={mute}
+								className="footer__icon"
+							/>
+						) : volume > 0 ? (
+							<VolumeMuteRoundedIcon
+								onClick={mute}
+								className="footer__icon"
+							/>
+						) : (
+							<VolumeOffRoundedIcon
+								onClick={mute}
+								className="footer__icon"
+							/>
+						)}
 					</Grid>
 					<Grid item xs>
 						<Slider value={volume} onChange={changeVolume} />

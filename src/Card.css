@@ -1,16 +1,24 @@
-.songRow {
+.card {
 	/* margin-left: 20px; */
 	/* padding: 20px; */
 	display: flex;
 	align-items: center;
 	color: white;
-	padding: 10px 0;
+	padding: 0 10px 10px 10px;
 	/* border-top: 1px solid #282828; */
 	/* border-bottom: 0.5px solid #282828; */
-	position: relative;
+	/* position: relative; */
+	flex-direction: column;
+	/* justify-content: center; */
+	/* flex-wrap: wrap; */
+	/* max-width: 500px; */
+	/* min-width: 500px; */
+	width: 200px;
+	margin: 10px;
+	max-height: 300px;
 }
 
-.songRow:hover {
+.card:hover {
 	/* cursor: pointer; */
 	background-color: #282828;
 	/* background-color: rgba(91, 87, 115, 0.2); */
@@ -20,44 +28,59 @@
 	box-shadow: 2px -2px 5px 0px rgba(255, 255, 255, 0.37); */
 }
 
-.songRow__info {
-	margin-left: 20px;
+.card__info {
+	/* margin-left: 20px;
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+	display: flex;
+	flex-wrap: wrap;
+    flex-direction: column; */
+	width: inherit;
+	padding: 10px;
 }
 
-.songRow__info > h1 {
+.card__info > h1 {
 	font-size: 16px;
-	text-overflow: ellipsis;
+	/* text-overflow: ellipsis;
 	overflow: hidden;
-	white-space: nowrap;
+    white-space: nowrap; */
+	display: -webkit-box;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-.songRow__info > p {
+.card__info > p {
 	font-size: 14px;
 	color: grey;
 	margin-top: 3px;
-	text-overflow: ellipsis;
+	/* text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+	display: flex;
+	flex-wrap: wrap; */
 }
 
-.songRow__container {
+.card__container {
 	position: relative;
-	height: 40px;
+	/* height: 40px;
 	width: 40px;
-	margin-left: 10px;
+    margin-left: 10px; */
+	height: 200px;
+	width: 200px;
 }
 
-.songRow__cover {
-	height: 40px;
-	width: 40px;
+.card__cover {
+	height: 200px;
+	width: 200px;
 	/* margin-left: 10px; */
 	box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+	padding: 10px;
 }
 
-.songRow__overlay {
+.card__overlay {
 	position: absolute;
 	top: 0;
 	bottom: 0;
@@ -71,7 +94,7 @@
 	background-color: #2828288c;
 }
 
-.songRow__container:hover .songRow__overlay {
+.card__container:hover .card__overlay {
 	opacity: 1;
 }
 
@@ -79,7 +102,7 @@
 	opacity: 1;
 }
 
-.songRow__overlayIcon {
+.card__overlayIcon {
 	color: gainsboro;
 	font-size: 100px;
 	position: absolute;
@@ -91,38 +114,40 @@
 	text-align: center;
 }
 
-.songRow__overlayIcon {
+.card__overlayIcon {
 	color: white;
 	font-size: 100px;
 	position: absolute;
-	height: 80% !important;
-	/* top: 50%;
-	left: 50%; */
-	/* transform: translate(-50%, -50%);
-	-ms-transform: translate(-50%, -50%); */
+	height: 50% !important;
 	text-align: center;
-	top: 4px;
-	left: 4px;
+	top: 50px !important;
+	left: 50px !important;
 }
 
-/* .songRow__cover:hover {
+/* .card__cover:hover {
 	opacity: 0.3;
 	background-image: image("@material-ui/icons/PlayCircleOutline");
 } */
 
-.songRow__overlayIcon:hover {
+.card__overlayIcon > .MuiSvgIcon-root {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.card__overlayIcon:hover {
 	transition: transform 0.2s ease-in-out;
 	transform: scale(1.08) !important;
 	/* color: white; */
 }
 
-.songRow__overlayIcon:active {
+.card__overlayIcon:active {
 	transition: transform 0.2s ease-in-out;
 	transform: scale(1) !important;
 	/* color: white; */
 }
 
-.songRow__savedTrack {
+.card__savedTrack {
 	/* padding-right: 10px; */
 	margin-left: 20px;
 	color: gray;
@@ -130,10 +155,23 @@
 	align-content: center;
 }
 
-.songRow__savedTrack:hover {
+.card__savedTrack:hover {
 	color: #1ed15e;
 }
 
 .hidden {
 	visibility: hidden;
+}
+
+.hide {
+	display: none;
+}
+
+.card__spinner {
+	width: 200px;
+	height: 300px;
+}
+
+.card__spinner > .css-0 {
+	left: 35%;
 }

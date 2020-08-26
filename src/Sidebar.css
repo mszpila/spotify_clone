@@ -1,11 +1,14 @@
 .sidebar {
 	/* max-height: 80vh; */
 	flex: 0.2;
+	max-width: 230px;
 	min-width: 230px;
 	padding: 0 10px;
+	padding-right: 4px;
 	color: white;
 	background-color: #040404;
 	/* overflow-y: overlay; */
+	/* height: 100vh; */
 }
 
 .sidebar__logo {
@@ -28,10 +31,11 @@
 }
 
 .sidebar__playlist {
-	overflow-y: overlay;
+	overflow-y: scroll;
+	scrollbar-width: none !important;
 	max-height: 45vh;
 }
 
-.sidebar__playlist::-webkit-scrollbar {
+/* .sidebar__playlist::-webkit-scrollbar {
 	display: none;
-}
+} */

@@ -1,0 +1,9 @@
+.search__cards {
+	margin-top: 60px;
+}
+
+.search__header > .header {
+	background-color: #0a0a0a;
+	transition: background-color 0.45s;
+	-webkit-transition: background-color 0.45s;
+}

@@ -1,12 +1,12 @@
 .footer {
 	position: fixed;
-	height: 7vh;
+	height: 13vh;
 	display: flex;
 	justify-content: space-between;
 	bottom: 0;
 	/* height: 30px; */
-	/* width: 100%; */
-	width: calc(100% - 20px);
+	width: 100%;
+	/* width: calc(100% - 20px); */
 	background-color: #282828;
 	padding: 20px;
 	align-items: center;
@@ -17,7 +17,12 @@
 	display: flex;
 	align-items: center;
 	color: white;
-	width: 300px;
+	min-width: 250px;
+	max-width: 400px;
+}
+
+.footer__left > img {
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .footer__albumLogo {
@@ -28,24 +33,47 @@
 }
 
 .footer__green {
-	color: #1ed15e;
+	color: #1ed15e !important;
+}
+
+.footer__songInfo {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	/* line-height: 80%; */
 }
 
 .footer__songInfo > h4 {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	font-size: 14px;
 	margin-bottom: 5px;
 }
 
 .footer__songInfo > p {
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
 	font-size: 12px;
+}
+
+.footer__savedTrack {
+	padding: 30px;
+	padding-left: 20px;
+	color: gray;
+	display: flex;
+	align-content: center;
 }
 
 .footer__center {
 	flex: 2;
 	/* padding: 0 100px; */
-	color: white;
+	color: #b3b3b3;
 	display: flex;
 	align-items: center;
-	justify-content: space-between;
+	/* justify-content: space-between; */
+	justify-content: center;
 	max-width: 500px;
 	flex-wrap: wrap;
 	/* margin-right: 100px; */
@@ -55,14 +83,19 @@
 .footer__green:hover {
 	transition: transform 0.2s ease-in-out;
 	transform: scale(1.08) !important;
+	color: white;
 }
 
 .footer_buttons {
-	padding: 0 100px;
+	padding: 0 10px;
 	display: flex;
 	justify-content: space-between;
+	/* justify-content: center; */
 	align-items: center;
 	width: 100%;
+	/* min-width: 480px; */
+	/* max-width: 500px; */
+	width: 225px;
 }
 
 .footer__slider {
@@ -73,12 +106,12 @@
 	flex: 1;
 	display: flex;
 	/* margin-top: 10px; */
-	margin-right: 20px;
+	margin: 0 10px;
 	/* margin-left: 100px; */
 	justify-content: flex-end;
 	align-items: center;
-	color: white;
-	min-width: 200px;
+	color: #b3b3b3;
+	min-width: 150px;
 }
 
 .footer * .MuiSlider-root {
@@ -97,4 +130,16 @@
 
 .footer__right > .MuiGrid-container {
 	align-items: center;
+}
+
+.footer__savedTrack {
+	/* padding-right: 10px; */
+	margin-left: 20px;
+	color: gray;
+	display: flex;
+	align-content: center;
+}
+
+.footer__savedTrack:hover {
+	color: #1ed15e;
 }

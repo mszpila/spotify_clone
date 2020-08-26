@@ -6,41 +6,22 @@ import { useDataLayerValue } from "./DataLayer";
 import PlayCircleFilledRoundedIcon from "@material-ui/icons/PlayCircleFilledRounded";
 import PauseCircleFilledRoundedIcon from "@material-ui/icons/PauseCircleFilledRounded";
 // import FavoriteIcon from "@material-ui/icons/Favorite";
-import FavoriteRoundedIcon from "@material-ui/icons/FavoriteRounded";
+// import FavoriteRoundedIcon from "@material-ui/icons/FavoriteRounded";
 // import MoreHorizIcon from "@material-ui/icons/MoreHoriz";
 import MoreHorizRoundedIcon from "@material-ui/icons/MoreHorizRounded";
 import SongRow from "./SongRow";
-import { useParams } from "react-router-dom";
 import BeatLoader from "react-spinners/BeatLoader";
 
-function Body({ spotifyApi, library }) {
-	let { id } = useParams();
+function Library({ spotifyApi }) {
 	const [
-		{ playlist, player, playback, tracks },
+		{ playlist, player, playback, library, user },
 		dispatch,
 	] = useDataLayerValue();
 
 	const [isLoading, setIsLoading] = useState(true);
-
-	const playPause = (event, newState) => {
-		if (playback?.context.uri === playlist?.uri) {
-			player.togglePlay();
-		} else {
-			spotifyApi.play({ context_uri: playlist?.uri });
-		}
-	};
-
 	const element = document.getElementsByClassName("body");
 
 	const header = document.getElementsByClassName("header");
-
-	useEffect(() => {
-		element[0].addEventListener("scroll", handleScroll);
-
-		return () => {
-			element[0].removeEventListener("scroll", handleScroll);
-		};
-	});
 
 	useEffect(() => {
 		element[0].addEventListener("scroll", colorChange);
@@ -48,7 +29,7 @@ function Body({ spotifyApi, library }) {
 		return () => {
 			element[0].removeEventListener("scroll", colorChange);
 		};
-	}, []);
+	});
 
 	const colorChange = () => {
 		if (element[0].scrollTop > 25) {
@@ -58,20 +39,72 @@ function Body({ spotifyApi, library }) {
 		}
 	};
 
+	useEffect(() => {
+		dispatch({
+			type: "SET_PLAYLIST",
+			payload: null,
+		});
+		setIsLoading(true);
+		spotifyApi
+			.getMySavedTracks({ limit: 50 })
+			.then((savedTracks) => {
+				dispatch({
+					type: "SET_LIBRARY",
+					payload: savedTracks,
+				});
+				return savedTracks;
+			})
+			.then((savedTracks) => {
+				const idsStatus = savedTracks.items.map((item) => {
+					return item.track.id;
+				});
+				return idsStatus;
+			})
+			.then((ids) => spotifyApi.containsMySavedTracks(ids))
+			.then((ids) => {
+				dispatch({
+					type: "SET_SAVED",
+					payload: ids,
+				});
+			})
+			.then(() => {
+				const context = library?.items.map((item) => {
+					return item.track.uri;
+				});
+				return context;
+			})
+			.then((uris) => {
+				dispatch({
+					type: "SET_URIS",
+					payload: uris,
+				});
+			})
+			.then(() => setIsLoading(false))
+			.catch((err) => console.log("err in library: ", err));
+	}, []);
+
+	useEffect(() => {
+		element[0].addEventListener("scroll", handleScroll);
+
+		return () => {
+			element[0].removeEventListener("scroll", handleScroll);
+		};
+	});
+
 	function handleScroll() {
 		if (
 			element[0].scrollHeight - element[0].scrollTop ===
 			element[0].clientHeight
 		) {
-			if (tracks.next !== null) {
+			if (library.next !== null) {
 				spotifyApi
-					.getPlaylistTracks(playlist?.id, {
-						offset: tracks.offset + tracks.limit,
+					.getMySavedTracks({
+						offset: library.offset + library.limit,
 						limit: 50,
 					})
 					.then((savedTracks) => {
 						dispatch({
-							type: "ADD_TRACKS",
+							type: "ADD_TO_LIBRARY",
 							payload: savedTracks,
 						});
 						const idsStatus = savedTracks.items.map((item) => {
@@ -79,81 +112,25 @@ function Body({ spotifyApi, library }) {
 						});
 						return idsStatus;
 					})
-					.then((ids) => {
-						return spotifyApi.containsMySavedTracks(ids);
-					})
+					.then((ids) => spotifyApi.containsMySavedTracks(ids))
 					.then((ids) => {
 						dispatch({
 							type: "ADD_SAVED",
 							payload: ids,
 						});
 					})
-					.catch((err) => console.log("err: ", err));
+					.catch((err) => console.log("err in library: ", err));
 			}
 		}
 	}
 
-	useEffect(() => {
-		dispatch({
-			type: "SET_LIBRARY",
-			payload: null,
-		});
-	}, []);
-
-	useEffect(() => {
-		if (id) {
-			setIsLoading(true);
-			spotifyApi
-				.getPlaylist(id, { limit: 50 })
-				.then((playlist) => {
-					dispatch({
-						type: "SET_PLAYLIST",
-						payload: playlist,
-					});
-					return playlist;
-				})
-				.then((playlist) => {
-					return spotifyApi.getPlaylistTracks(playlist.id, {
-						limit: 50,
-					});
-				})
-				.then((tracks) => {
-					dispatch({
-						type: "SET_TRACKS",
-						payload: tracks,
-					});
-					const idsStatus = tracks.items.map((item) => {
-						return item.track.id;
-					});
-					return idsStatus;
-				})
-				.then((ids) => {
-					return spotifyApi
-						.containsMySavedTracks(ids)
-						.then((results) => {
-							let index = 0;
-							const final = ids.map((item) => {
-								if (item === null) {
-									return item;
-								} else {
-									let id = results[index];
-									index++;
-									return id;
-								}
-							});
-							return final;
-						});
-				})
-				.then((ids) => {
-					dispatch({
-						type: "SET_SAVED",
-						payload: ids,
-					});
-				})
-				.then(() => setIsLoading(false))
-				.catch((err) => console.log("error body.js ", err));
+	const playPause = (event, newState) => {
+		if (playback?.context.uri === `spotify:user:${user.name}:collection`) {
+			player.togglePlay();
+		} else {
+			spotifyApi.play({ context_uri: `spotify:collection` });
 		}
-	}, [id]);
+	};
 
 	return (
 		<div className="body">
@@ -162,14 +139,16 @@ function Body({ spotifyApi, library }) {
 			<BeatLoader loading={isLoading} />
 
 			<div className={`${isLoading ? "hide" : "body__info"}`}>
-				<img src={playlist?.images[0]?.url} alt="" />
+				<img
+					src="https://t.scdn.co/images/3099b3803ad9496896c43f22fe9be8c4.png"
+					alt=""
+				/>
 				<div className="body__infoText">
 					<strong>PLAYLIST</strong>
-					<h2>{playlist?.name}</h2>
-					<p>{playlist?.description}</p>
+					<h2>Polubione utwory</h2>
+					<p></p>
 				</div>
 			</div>
-
 			<div className={`${isLoading ? "hide" : "body__songs"}`}>
 				<div className="body__icons">
 					{playback?.context.uri === playlist?.uri ? (
@@ -190,15 +169,13 @@ function Body({ spotifyApi, library }) {
 							onClick={playPause}
 						/>
 					)}
-					<FavoriteRoundedIcon className="body__heart" />
 					<MoreHorizRoundedIcon className="body__more" />
 				</div>
-				{tracks?.items?.map((item, index) => (
+				{library?.items?.map((item) => (
 					<SongRow
 						spotifyApi={spotifyApi}
 						track={item.track}
-						index={index}
-						isLocal={item.is_local}
+						index={1}
 					/>
 				))}
 			</div>
@@ -206,4 +183,4 @@ function Body({ spotifyApi, library }) {
 	);
 }
 
-export default Body;
+export default Library;

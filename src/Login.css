@@ -6,8 +6,12 @@
 }
 
 .login > img {
-	width: 60%;
+	width: 300px;
 }
+
+/* .login > hr {
+	border: 1px solid #1db954;
+} */
 
 .login > a {
 	padding: 20px;

@@ -12,6 +12,7 @@
     "react-dom": "^16.13.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
+    "react-spinners": "^0.9.0",
     "spotify-web-api-js": "^1.5.0",
     "use-spotify-web-playback-sdk": "^0.2.2"
   },
@@ -35,5 +36,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@welldone-software/why-did-you-render": "^5.0.0-alpha.1"
   }
 }

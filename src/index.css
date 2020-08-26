@@ -1,9 +1,21 @@
-body::-webkit-scrollbar {
+/* body::-webkit-scrollbar {
+	display: none;
+} */
+
+::-webkit-scrollbar {
 	display: none;
 }
 
+/* toolbarbutton[class^="scrollbutton"] {
+	display: none !important;
+} */
+/* ::-webkit-scrollbar {
+	width: none !important;
+} */
+
 * {
 	margin: 0;
+	box-sizing: border-box;
 }
 
 body {
@@ -13,8 +25,14 @@ body {
 		"Helvetica Neue", sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	-ms-overflow-style: none; /* IE and Edge */
-	scrollbar-width: none; /* Firefox */
+	width: 100%;
+	min-width: 768px;
+	min-height: 600px;
+	height: 100%;
+	overflow: hidden;
+	position: fixed;
+	/* -ms-overflow-style: none; IE and Edge */
+	scrollbar-width: none !important;
 }
 
 code {
