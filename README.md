@@ -1,5 +1,7 @@
 URL: https://mszpila.github.io/spotify_clone/
 
+![alt text](https://i.ibb.co/q1ynN23/spotifyclone.png)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
